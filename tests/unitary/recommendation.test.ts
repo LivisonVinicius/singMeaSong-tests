@@ -178,14 +178,34 @@ describe("getTop function", () => {
 });
 
 describe("getRandom", () => {
-  it("Must throw not_found if there isn't any recommendation whith the category randomized", async () => {
+  it("Must throw not_found if there isn't any recommendation in database", async () => {
     jest
       .spyOn(recommendationRepository, "findAll")
       .mockImplementation((): any => {
         return [];
       });
     const response = recommendationService.getRandom();
-
     expect(response).rejects.toEqual({ type: "not_found", message: "" });
+  });
+  it("Must call findAll function with scoreFilter 'lte'", async () => {
+    const arr = [
+      { ...recommendationFactory, score: 8 },
+      { ...recommendationFactory, score: 2 },
+      { ...recommendationFactory, score: 3 },
+    ];
+    jest.spyOn(Math, "random").mockImplementation((): any => {
+      return 0.8;
+    });
+    jest
+      .spyOn(recommendationRepository, "findAll")
+      .mockImplementation(({ score, scoreFilter }): any => {
+        return arr;
+      });
+
+    await recommendationService.getRandom();
+    expect(recommendationRepository.findAll).toHaveBeenCalledWith({
+      score: 10,
+      scoreFilter: "lte",
+    });
   });
 });
