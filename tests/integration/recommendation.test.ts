@@ -78,6 +78,22 @@ describe("POST /recommendations/:id/downvote", () => {
     const response = await agent.post(`/recommendations/-1/downvote`);
     expect(response.status).toEqual(404);
   });
+  it("Must remove recommendation if score is bellow -5", async () => {
+    const recommendation = { ...recommendationFactory(), score: -5 };
+    await client.recommendation.create({ data: recommendation });
+    const { id } = await client.recommendation.findFirst({
+      where: { name: recommendation.name },
+    });
+    const response = await agent.post(`/recommendations/${id}/downvote`);
+    const createdRecomendation = await client.recommendation.findFirst({
+      where: {
+        name: recommendation.name,
+      },
+    });
+
+    expect(response.status).toEqual(200);
+    expect(createdRecomendation).toBe(null);
+  });
 });
 
 afterAll(async () => {
