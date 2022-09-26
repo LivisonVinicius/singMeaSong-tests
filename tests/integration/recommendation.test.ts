@@ -105,8 +105,8 @@ describe("GET /recommendations", () => {
     const response = await agent.get("/recommendations");
     expect(empty.status).toEqual(200);
     expect(response.status).toEqual(200);
-    expect(empty.body.length).toEqual(0);
-    expect(response.body.length).toEqual(1);
+    expect(empty.body).toHaveLength(0);
+    expect(response.body).toHaveLength(1);
   });
 });
 
@@ -128,6 +128,24 @@ describe("GET /recommendations/random", () => {
     const response = await agent.get("/recommendations/random");
     expect(response.status).toEqual(404);
     expect(response.body.name).toEqual(undefined);
+  });
+});
+
+describe("GET /recommendations/:id", () => {
+  it("Must return status 404 if id does not exist", async () => {
+    const response = await agent.get("/recommendations/-1");
+    expect(response.status).toEqual(404);
+    expect(response.body.name).toEqual(undefined);
+  });
+  it("Must return status 200 and a recommendation with the same id", async () => {
+    const recommendation = recommendationFactory();
+    await agent.post("/recommendations").send(recommendation);
+    const { id } = await client.recommendation.findFirst({
+      where: { name: recommendation.name },
+    });
+    const response = await agent.get(`/recommendations/${id}`);
+    expect(response.status).toEqual(200);
+    expect(response.body.id).toEqual(id);
   });
 });
 
