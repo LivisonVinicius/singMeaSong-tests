@@ -44,3 +44,22 @@ describe("insert function", () => {
     expect(recommendationRepository.create).toBeCalled();
   });
 });
+
+describe("upvote function", () => {
+  it("Must throw not_found error if id does not exist", async () => {
+    jest
+      .spyOn(recommendationRepository, "find")
+      .mockImplementationOnce((): any => {
+        return false;
+      });
+    jest
+      .spyOn(recommendationRepository, "updateScore")
+      .mockImplementationOnce((): any => {});
+    const id = -1;
+
+    const response = recommendationService.upvote(id);
+
+    expect(response).rejects.toEqual({ type: "not_found", message: "" });
+    expect(recommendationRepository.updateScore).not.toBeCalled();
+  });
+});
