@@ -8,3 +8,6 @@ export function recommendationFactory() {
   };
   return recommendation;
 }
+export function scoreFactory() {
+  return faker.datatype.number({ min: -5, max: 50 });
+}

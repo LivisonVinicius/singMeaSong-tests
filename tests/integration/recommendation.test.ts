@@ -1,13 +1,13 @@
 import supertest from "supertest";
 import app from "../../src/app";
-import { recommendationFactory } from "../factories/recommendationFactory";
-import pkg, { prisma } from "@prisma/client";
-import exp from "constants";
+import {
+  recommendationFactory,
+  scoreFactory,
+} from "../factories/recommendationFactory";
+import pkg from "@prisma/client";
 
 const { PrismaClient } = pkg;
-
 const client = new PrismaClient();
-
 const agent = supertest(app);
 
 beforeEach(async () => {
@@ -103,11 +103,31 @@ describe("GET /recommendations", () => {
     const recommendation = recommendationFactory();
     await agent.post("/recommendations").send(recommendation);
     const response = await agent.get("/recommendations");
-    console.log(response.body);
     expect(empty.status).toEqual(200);
     expect(response.status).toEqual(200);
     expect(empty.body.length).toEqual(0);
     expect(response.body.length).toEqual(1);
+  });
+});
+
+describe("GET /recommendations/random", () => {
+  it("Must return status 200 and return a random recommendation", async () => {
+    const arr = [
+      { ...recommendationFactory(), score: scoreFactory() },
+      { ...recommendationFactory(), score: scoreFactory() },
+      { ...recommendationFactory(), score: scoreFactory() },
+      { ...recommendationFactory(), score: scoreFactory() },
+      { ...recommendationFactory(), score: scoreFactory() },
+    ];
+    await client.recommendation.createMany({ data: arr });
+    const response = await agent.get("/recommendations/random");
+    expect(response.status).toEqual(200);
+    expect(response.body.name).not.toEqual(undefined);
+  });
+  it("Must return status 404 and do not a recommendation if there isn't one in database", async () => {
+    const response = await agent.get("/recommendations/random");
+    expect(response.status).toEqual(404);
+    expect(response.body.name).toEqual(undefined);
   });
 });
 
