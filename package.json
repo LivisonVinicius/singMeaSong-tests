@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nodemon src/server.ts",
     "test:unitary": "dotenv jest -- -i --coverage --testPathPattern=tests/unitary",
-    "test:integration": "dotenv -e .env.test jest -- -i --testPathPattern=tests/integration"
+    "test:integration": "dotenv -e .env.test prisma migrate dev && dotenv -e .env.test jest -- -i --testPathPattern=tests/integration"
   },
   "keywords": [],
   "author": "",
