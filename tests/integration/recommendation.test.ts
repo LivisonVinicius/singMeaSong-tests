@@ -97,6 +97,9 @@ describe("POST /recommendations/:id/downvote", () => {
   });
 });
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////// GETS //////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
 describe("GET /recommendations", () => {
   it("Must return status 200, return a empty array or array of recommendations", async () => {
     const empty = await agent.get("/recommendations");
@@ -146,6 +149,26 @@ describe("GET /recommendations/:id", () => {
     const response = await agent.get(`/recommendations/${id}`);
     expect(response.status).toEqual(200);
     expect(response.body.id).toEqual(id);
+  });
+});
+
+describe("GET /recommendations/top/amount", () => {
+  it("Must return status 200 and an array with x (amount) recommendations in decrescent order", async () => {
+    const arr = [
+      { ...recommendationFactory(), score: scoreFactory() },
+      { ...recommendationFactory(), score: scoreFactory() },
+      { ...recommendationFactory(), score: scoreFactory() },
+      { ...recommendationFactory(), score: scoreFactory() },
+      { ...recommendationFactory(), score: scoreFactory() },
+    ];
+    const amount = 3;
+    await client.recommendation.createMany({ data: arr });
+    const response = await agent.get(`/recommendations/top/${amount}`);
+
+    arr.sort((a, b) => b.score - a.score);
+    expect(arr[0].name).toEqual(response.body[0].name);
+    expect(response.status).toEqual(200);
+    expect(response.body).toHaveLength(3);
   });
 });
 

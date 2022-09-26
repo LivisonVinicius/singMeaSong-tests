@@ -113,7 +113,7 @@ describe("downvote function", () => {
       });
     jest
       .spyOn(recommendationRepository, "updateScore")
-      .mockImplementationOnce((id, operation): any => {
+      .mockImplementationOnce((): any => {
         return { score: 1 };
       });
     jest.spyOn(recommendationRepository, "remove");
@@ -136,7 +136,7 @@ describe("downvote function", () => {
       });
     jest
       .spyOn(recommendationRepository, "updateScore")
-      .mockImplementationOnce((id, operation): any => {
+      .mockImplementationOnce((): any => {
         return { score: -6 };
       });
     jest
@@ -198,7 +198,7 @@ describe("getRandom", () => {
     });
     jest
       .spyOn(recommendationRepository, "findAll")
-      .mockImplementation(({ score, scoreFilter }): any => {
+      .mockImplementation((): any => {
         return arr;
       });
 
@@ -219,7 +219,7 @@ describe("getRandom", () => {
     });
     jest
       .spyOn(recommendationRepository, "findAll")
-      .mockImplementation(({ score, scoreFilter }): any => {
+      .mockImplementation((): any => {
         return arr;
       });
 
