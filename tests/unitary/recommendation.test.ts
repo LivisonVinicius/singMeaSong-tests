@@ -159,7 +159,7 @@ describe("get function", () => {
     jest
       .spyOn(recommendationRepository, "findAll")
       .mockImplementationOnce((): any => {});
-    const promise = await recommendationService.get();
+    await recommendationService.get();
 
     expect(recommendationRepository.findAll).toBeCalled();
   });
@@ -178,9 +178,14 @@ describe("getTop function", () => {
 });
 
 describe("getRandom", () => {
-    it("Must throw not_found if there isn't any recommendation whith the category randomized", async () => {
-      const random = 0.2;
-      const scoreFilter = "gt";
-      jest.spyOn(recommendationRepository, "findAll").mockImplementationOnce(()=>)
-    });
+  it("Must throw not_found if there isn't any recommendation whith the category randomized", async () => {
+    jest
+      .spyOn(recommendationRepository, "findAll")
+      .mockImplementation((): any => {
+        return [];
+      });
+    const response = recommendationService.getRandom();
+
+    expect(response).rejects.toEqual({ type: "not_found", message: "" });
   });
+});
