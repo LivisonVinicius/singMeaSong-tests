@@ -22,6 +22,16 @@ describe("POST /recommendations", () => {
     expect(resp.status).toEqual(201);
     expect(first.name).toEqual(recommendation.name);
   });
+
+  it("Must return 409 try to POST a recommendation that the name already exists", async () => {
+    const recommendation = recommendationFactory();
+    await agent.post("/recommendations").send(recommendation);
+    const resp = await agent.post("/recommendations").send(recommendation);
+    const count = await client.recommendation.count();
+
+    expect(resp.status).toEqual(409);
+    expect(count).toEqual(1);
+  });
 });
 
 afterAll(async () => {
