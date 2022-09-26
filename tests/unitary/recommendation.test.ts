@@ -127,4 +127,29 @@ describe("downvote function", () => {
     );
     expect(recommendationRepository.remove).not.toBeCalled();
   });
+  it("updateScore must be called with 'decrement' as argument and delete the recommendation", async () => {
+    const recommendation = recommendationFactory();
+    jest
+      .spyOn(recommendationRepository, "find")
+      .mockImplementationOnce((): any => {
+        return recommendation;
+      });
+    jest
+      .spyOn(recommendationRepository, "updateScore")
+      .mockImplementationOnce((id, operation): any => {
+        return { score: -6 };
+      });
+    jest
+      .spyOn(recommendationRepository, "remove")
+      .mockImplementationOnce((): any => {});
+
+    const id = 1;
+    await recommendationService.downvote(id);
+
+    expect(recommendationRepository.updateScore).toBeCalledWith(
+      id,
+      "decrement"
+    );
+    expect(recommendationRepository.remove).toBeCalled();
+  });
 });
