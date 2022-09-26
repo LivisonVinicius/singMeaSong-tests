@@ -2,6 +2,7 @@ import supertest from "supertest";
 import app from "../../src/app";
 import { recommendationFactory } from "../factories/recommendationFactory";
 import pkg, { prisma } from "@prisma/client";
+import exp from "constants";
 
 const { PrismaClient } = pkg;
 
@@ -93,6 +94,20 @@ describe("POST /recommendations/:id/downvote", () => {
 
     expect(response.status).toEqual(200);
     expect(createdRecomendation).toBe(null);
+  });
+});
+
+describe("GET /recommendations", () => {
+  it("Must return status 200, return a empty array or array of recommendations", async () => {
+    const empty = await agent.get("/recommendations");
+    const recommendation = recommendationFactory();
+    await agent.post("/recommendations").send(recommendation);
+    const response = await agent.get("/recommendations");
+    console.log(response.body);
+    expect(empty.status).toEqual(200);
+    expect(response.status).toEqual(200);
+    expect(empty.body.length).toEqual(0);
+    expect(response.body.length).toEqual(1);
   });
 });
 
