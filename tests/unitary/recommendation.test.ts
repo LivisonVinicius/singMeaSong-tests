@@ -62,4 +62,25 @@ describe("upvote function", () => {
     expect(response).rejects.toEqual({ type: "not_found", message: "" });
     expect(recommendationRepository.updateScore).not.toBeCalled();
   });
+  it("updateScore must be called", async () => {
+    const recommendation = recommendationFactory();
+    jest
+      .spyOn(recommendationRepository, "find")
+      .mockImplementationOnce((): any => {
+        return recommendation;
+      });
+    jest
+      .spyOn(recommendationRepository, "updateScore")
+      .mockImplementationOnce((id, operation): any => {
+        return operation;
+      });
+
+    const id = 1;
+    await recommendationService.upvote(id);
+
+    expect(recommendationRepository.updateScore).toBeCalledWith(
+      id,
+      "increment"
+    );
+  });
 });
