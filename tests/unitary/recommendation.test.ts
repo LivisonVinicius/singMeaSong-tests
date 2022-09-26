@@ -114,7 +114,7 @@ describe("downvote function", () => {
     jest
       .spyOn(recommendationRepository, "updateScore")
       .mockImplementationOnce((id, operation): any => {
-        return operation;
+        return { score: 1 };
       });
     jest.spyOn(recommendationRepository, "remove");
 
@@ -153,3 +153,28 @@ describe("downvote function", () => {
     expect(recommendationRepository.remove).toBeCalled();
   });
 });
+
+describe("get function", () => {
+  it("Must call findAll function", async () => {
+    jest
+      .spyOn(recommendationRepository, "findAll")
+      .mockImplementationOnce((): any => {});
+    const promise = await recommendationService.get();
+
+    expect(recommendationRepository.findAll).toBeCalled();
+  });
+});
+
+describe("getTop function", () => {
+  it("Must call getAmountByScore function", async () => {
+    jest
+      .spyOn(recommendationRepository, "getAmountByScore")
+      .mockImplementationOnce((): any => {});
+    const amount = 1;
+    const promise = await recommendationService.getTop(amount);
+
+    expect(recommendationRepository.getAmountByScore).toBeCalledWith(amount);
+  });
+});
+
+
