@@ -208,4 +208,25 @@ describe("getRandom", () => {
       scoreFilter: "lte",
     });
   });
+  it("Must call findAll function with scoreFilter 'gt'", async () => {
+    const arr = [
+      { ...recommendationFactory, score: 11 },
+      { ...recommendationFactory, score: 12 },
+      { ...recommendationFactory, score: 14 },
+    ];
+    jest.spyOn(Math, "random").mockImplementation((): any => {
+      return 0.2;
+    });
+    jest
+      .spyOn(recommendationRepository, "findAll")
+      .mockImplementation(({ score, scoreFilter }): any => {
+        return arr;
+      });
+
+    await recommendationService.getRandom();
+    expect(recommendationRepository.findAll).toHaveBeenCalledWith({
+      score: 10,
+      scoreFilter: "gt",
+    });
+  });
 });
