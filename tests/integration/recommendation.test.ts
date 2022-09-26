@@ -51,7 +51,33 @@ describe("POST /recommendations/:id/upvote", () => {
     expect(score).toEqual(1);
     expect(response.status).toEqual(200);
   });
-  
+  it("Must return status 404 if id does not exist", async () => {
+    const response = await agent.post(`/recommendations/-1/upvote`);
+    expect(response.status).toEqual(404);
+  });
+});
+
+describe("POST /recommendations/:id/downvote", () => {
+  it("Must return status 200 and -1 score", async () => {
+    const recommendation = recommendationFactory();
+    await agent.post("/recommendations").send(recommendation);
+
+    const { id } = await client.recommendation.findFirst({
+      where: { name: recommendation.name },
+    });
+    const response = await agent.post(`/recommendations/${id}/downvote`);
+    const { score } = await client.recommendation.findFirst({
+      where: {
+        name: recommendation.name,
+      },
+    });
+    expect(score).toEqual(-1);
+    expect(response.status).toEqual(200);
+  });
+  it("Must return status 404 if id does not exist", async () => {
+    const response = await agent.post(`/recommendations/-1/downvote`);
+    expect(response.status).toEqual(404);
+  });
 });
 
 afterAll(async () => {
