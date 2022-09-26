@@ -62,7 +62,7 @@ describe("upvote function", () => {
     expect(response).rejects.toEqual({ type: "not_found", message: "" });
     expect(recommendationRepository.updateScore).not.toBeCalled();
   });
-  it("updateScore must be called", async () => {
+  it("updateScore must be called with 'increment' as argument", async () => {
     const recommendation = recommendationFactory();
     jest
       .spyOn(recommendationRepository, "find")
@@ -82,5 +82,49 @@ describe("upvote function", () => {
       id,
       "increment"
     );
+  });
+});
+
+describe("downvote function", () => {
+  it("Must throw not_found error if id does not exist", async () => {
+    jest
+      .spyOn(recommendationRepository, "find")
+      .mockImplementationOnce((): any => {
+        return false;
+      });
+    jest
+      .spyOn(recommendationRepository, "updateScore")
+      .mockImplementationOnce((): any => {});
+    jest.spyOn(recommendationRepository, "remove");
+    const id = -1;
+
+    const response = recommendationService.upvote(id);
+
+    expect(response).rejects.toEqual({ type: "not_found", message: "" });
+    expect(recommendationRepository.updateScore).not.toBeCalled();
+    expect(recommendationRepository.remove).not.toBeCalled();
+  });
+  it("updateScore must be called with 'decrement' as argument and do not delete the recommendation", async () => {
+    const recommendation = recommendationFactory();
+    jest
+      .spyOn(recommendationRepository, "find")
+      .mockImplementationOnce((): any => {
+        return recommendation;
+      });
+    jest
+      .spyOn(recommendationRepository, "updateScore")
+      .mockImplementationOnce((id, operation): any => {
+        return operation;
+      });
+    jest.spyOn(recommendationRepository, "remove");
+
+    const id = 1;
+    await recommendationService.downvote(id);
+
+    expect(recommendationRepository.updateScore).toBeCalledWith(
+      id,
+      "decrement"
+    );
+    expect(recommendationRepository.remove).not.toBeCalled();
   });
 });
