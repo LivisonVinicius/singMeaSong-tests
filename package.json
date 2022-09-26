@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/server.ts",
-    "test :unit": "dotenv -e .env.test jest -- -i --coverage --testPathPattern=tests/unit",
+    "test :unit": "dotenv -e .env.test jest -- -i --coverage --testPathPattern=tests/unitary",
     "test :integration": "dotenv -e .env.test jest -- -i --testPathPattern=tests/integration"
   },
   "keywords": [],
@@ -32,7 +32,7 @@
     "typescript": "^4.6.4"
   },
   "dependencies": {
-    "@prisma/client": "^3.15.2",
+    "@prisma/client": "^4.3.1",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
